@@ -95,26 +95,35 @@
             return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
         }
 
-        // Simulate verification (since we can't call your app's API from static HTML)
-        function simulateVerification() {
+        // Handle verification - opens app with verification parameters
+        function handleVerification() {
             const token = getUrlParameter('token');
             const email = getUrlParameter('email');
             
             document.getElementById('loading').style.display = 'none';
             
             if (token && email) {
-                // Show success for demo
+                // Show success message
                 document.getElementById('success').style.display = 'block';
                 document.getElementById('info').style.display = 'block';
                 
-                // In real implementation, you would call your verification API here
+                // Log for debugging
                 console.log('Verification token:', token);
                 console.log('Email:', email);
                 
-                // Try to open the app after 2 seconds
+                // Try to open the app immediately with verification parameters
+                const appUrl = 'gptchai://verify-email?token=' + encodeURIComponent(token) + '&email=' + encodeURIComponent(email);
+                window.location.href = appUrl;
+                
+                // Fallback: Show manual instructions after 3 seconds
                 setTimeout(() => {
-                    window.location.href = 'gptchai://verified?email=' + encodeURIComponent(email);
-                }, 2000);
+                    document.getElementById('info').innerHTML = `
+                        <p>If the app didn't open automatically:</p>
+                        <p>1. Open the GptchAI app manually</p>
+                        <p>2. Your email should be verified automatically</p>
+                        <a href="${appUrl}" class="btn">Try Opening App Again</a>
+                    `;
+                }, 3000);
                 
             } else {
                 document.getElementById('error').style.display = 'block';
@@ -124,7 +133,7 @@
 
         // Start verification when page loads
         window.onload = function() {
-            setTimeout(simulateVerification, 1000);
+            setTimeout(handleVerification, 1000);
         };
     </script>
 </body>
